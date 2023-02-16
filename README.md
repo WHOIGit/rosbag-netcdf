@@ -23,3 +23,6 @@ This will extract the `/ctd` topic to a csv file called `ctd_data.csv`
 * Interpolates the GPS data to the CTD timebase
 * Writes NetCDF
 
+### TODO:
+
+* CF compliance
