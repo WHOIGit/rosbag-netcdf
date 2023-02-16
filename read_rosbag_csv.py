@@ -1,5 +1,6 @@
 import re
 
+import numpy as np
 import pandas as pd
 import xarray as xr 
 
@@ -9,7 +10,7 @@ def regularize_column_names(df, prefix='/'):
     new_col_names = []
 
     for col_name in df.columns:
-        new_col_name = re.sub(r'/ctd/', '', col_name)
+        new_col_name = re.sub(prefix, '', col_name)
         new_col_name = re.sub(r'/', '-', new_col_name)
         new_col_names.append(new_col_name)
 
@@ -31,6 +32,27 @@ def read_bag_csv(path, prefix='/'):
 
 ctd_data = read_bag_csv('data/rosbags/ctd.csv', prefix='/ctd/')
 
-ctd_dataset = xr.Dataset.from_dataframe(ctd_data)
+# simplify CTD data
 
-ctd_dataset.to_netcdf('output/ctd.nc')
+ctd_data = ctd_data[['salinity','temperature','pressure','sound_speed']]
+
+# read GPS data from exported CSV file
+
+gps_data = read_bag_csv('data/rosbags/gps_fix.csv', prefix='/gps/fix/')
+
+# simplify gps data
+
+gps_data = gps_data[['latitude','longitude','altitude']]
+
+# interpolate gps data to the ctd timebase
+
+merged = pd.concat([ctd_data, gps_data])
+
+for col in gps_data.columns:
+    merged[col] = np.interp(merged.index, gps_data.index, gps_data[col])
+
+merged_dataset = xr.Dataset.from_dataframe(merged)
+
+merged_dataset.to_netcdf('output/gps_ctd.nc')
+
+
