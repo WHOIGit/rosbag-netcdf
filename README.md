@@ -18,11 +18,8 @@ This will extract the `/ctd` topic to a csv file called `ctd_data.csv`
 
 ## NetCDF generation
 
-(Notes on how it will be done)
+* Reads two CSV files, one for `/ctd` and one for `/gps/fix`
+* Subsets columns
+* Interpolates the GPS data to the CTD timebase
+* Writes NetCDF
 
-* Read selected topics from bag csv using Pandas `read_csv`
-* Convert UNIX epoch timestamps to datetime index
-* Do any other necessary dtype corrections if Pandas infers them wrong
-* Generate timeseries
-* Perform any necessary processing
-* Write to NetCDF
