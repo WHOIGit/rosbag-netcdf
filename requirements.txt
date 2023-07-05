@@ -2,3 +2,4 @@ pandas
 xarray
 netcdf4
 scipy
+bagpy
